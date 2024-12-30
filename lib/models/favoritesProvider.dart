@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 
 class FavoritesProvider with ChangeNotifier {
-  final List<String> _fruits = ['Apple', 'Banana', 'Erdbeere', 'Birne'];
+  final List<String> _fruits = [
+    'Apple',
+    'Banana',
+    'Erdbeere',
+    'Birne',
+    'Mango',
+    'Cherry',
+    'Coconut'
+  ];
 
   final List<String> _favoriteFruits = [];
 
