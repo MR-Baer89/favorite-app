@@ -17,6 +17,7 @@ class ProductsScreen extends StatelessWidget {
               return Stack(
                 children: [
                   IconButton(
+                    iconSize: 36,
                     icon: const Icon(Icons.favorite),
                     onPressed: () {
                       // Navigation zur FavoritesScreen
