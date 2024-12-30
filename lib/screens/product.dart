@@ -34,7 +34,7 @@ class ProductsScreen extends StatelessWidget {
                       right: 5,
                       top: 5,
                       child: Container(
-                        padding: const EdgeInsets.all(2),
+                        padding: const EdgeInsets.all(4),
                         decoration: const BoxDecoration(
                           color: Colors.red,
                           shape: BoxShape.circle,
