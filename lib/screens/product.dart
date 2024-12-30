@@ -1,78 +1,87 @@
-// Statische Implementierung ohne Provider
-import 'package:favorites_app/models/product.dart';
+import 'package:favorites_app/models/favoritesProvider.dart';
 import 'package:favorites_app/screens/favorites.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class ProductsScreen extends StatefulWidget {
+class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
-
-  @override
-  State<ProductsScreen> createState() => _ProductsScreenState();
-}
-
-class _ProductsScreenState extends State<ProductsScreen> {
-  final List<Product> _products = [
-    Product(id: '1', name: 'Banane'),
-    Product(id: '2', name: 'Apfel'),
-    Product(id: '3', name: 'Erdbeere'),
-    Product(id: '4', name: 'Birne'),
-  ];
-
-  void _toggleFavorite(String id) {
-    setState(() {
-      final product = _products.firstWhere((product) => product.id == id);
-      product.isFavorite = !product.isFavorite;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Products'),
+        title: const Text('Meine Früchte'),
         actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.favorite,
-              size: 30,
-              color: Colors.black54,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FavoritesScreen(
-                    favoriteProducts: _products
-                        .where((product) => product.isFavorite)
-                        .toList(),
+          Consumer<FavoritesProvider>(
+            builder: (context, provider, child) {
+              return Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.favorite),
+                    onPressed: () {
+                      // Navigation zur FavoritesScreen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FavoritesScreen(),
+                        ),
+                      );
+                    },
                   ),
-                ),
+                  if (provider.favoriteFruits.isNotEmpty)
+                    Positioned(
+                      right: 5,
+                      top: 5,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          provider.favoriteFruits.length.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               );
             },
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: _products.length,
-        itemBuilder: (context, index) {
-          final product = _products[index];
-          return Card(
-            elevation: 2,
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            color: const Color.fromARGB(255, 150, 202, 228),
-            child: ListTile(
-              title: Text(product.name),
-              trailing: IconButton(
-                icon: Icon(
-                  product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: product.isFavorite ? Colors.red : null,
+      body: Consumer<FavoritesProvider>(
+        builder: (context, provider, child) {
+          return ListView.builder(
+            itemCount: provider.fruits.length,
+            itemBuilder: (context, index) {
+              final fruit = provider.fruits[index];
+              return Card(
+                elevation: 2,
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                onPressed: () => _toggleFavorite(product.id),
-              ),
-            ),
+                color: const Color.fromARGB(255, 150, 202, 228),
+                child: ListTile(
+                  title: Text(fruit),
+                  trailing: IconButton(
+                    icon: Icon(
+                      provider.favoriteFruits.contains(fruit)
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: provider.favoriteFruits.contains(fruit)
+                          ? Colors.red
+                          : null,
+                    ),
+                    onPressed: () => provider.toggleFavorite(fruit),
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
